@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Practice test · Mock Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>body{margin:0}</style>
+<style>
+/* Layout: test-centre console. Dark slate status bar on top, one centred question column, a single-line question navigator, sticky action bar at the bottom. */
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --ink:#17212b; --muted:#56636f; --line:#d3dae1; --line-strong:#a9b4bf;
+  --accent:#1d5a8c; --accent-ink:#ffffff; --accent-soft:#dfeaf5; --accent-soft-ink:#164a74;
+  --flag:#a35f00; --flag-soft:#fbecd2; --flag-line:#e0a64b;
+  --ok:#1e7a4a; --ok-soft:#e1f2e8; --bad:#b3261e; --bad-soft:#f9e3e1;
+  --bar:#1b2733; --bar-ink:#eef2f6; --bar-muted:#a9b6c3;
+  --font-ui:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f151b; --panel:#17212b; --ink:#e4eaf0; --muted:#9aa7b4; --line:#2b3743; --line-strong:#4a5866;
+  --accent:#6aa6dc; --accent-ink:#0d1620; --accent-soft:#1b3349; --accent-soft-ink:#a9cdee;
+  --flag:#f0b252; --flag-soft:#3b2c12; --flag-line:#8a6424;
+  --ok:#62c48f; --ok-soft:#15301f; --bad:#f08a80; --bad-soft:#3a1b19;
+  --bar:#0a1016; --bar-ink:#e4eaf0; --bar-muted:#8d9aa7; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151b; --panel:#17212b; --ink:#e4eaf0; --muted:#9aa7b4; --line:#2b3743; --line-strong:#4a5866;
+  --accent:#6aa6dc; --accent-ink:#0d1620; --accent-soft:#1b3349; --accent-soft-ink:#a9cdee;
+  --flag:#f0b252; --flag-soft:#3b2c12; --flag-line:#8a6424;
+  --ok:#62c48f; --ok-soft:#15301f; --bad:#f08a80; --bad-soft:#3a1b19;
+  --bar:#0a1016; --bar-ink:#e4eaf0; --bar-muted:#8d9aa7; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.only-short{display:none}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bar)}
+button{font:inherit;color:inherit}
+code.t{font-family:var(--font-mono);font-size:.88em;background:var(--accent-soft);color:var(--accent-soft-ink);padding:0 .25em;border-radius:3px;overflow-wrap:anywhere}
+.btn{display:inline-flex;align-items:center;gap:.45rem;min-height:40px;padding:.45rem 1rem;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--panel);cursor:pointer;font-weight:500;font-size:.95rem}
+.btn:hover{border-color:var(--ink)}
+.btn:focus-visible,.opt:focus-visible,.qn:focus-visible,.link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.flag-on{background:var(--flag-soft);border-color:var(--flag-line);color:var(--flag)}
+.btn svg{width:16px;height:16px;flex:none}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.muted{color:var(--muted)}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* status bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bar);color:var(--bar-ink)}
+.bar .wrap{display:flex;align-items:center;gap:1rem;min-height:52px;padding-block:.4rem;max-width:1100px}
+.bar .name{font-weight:600;font-size:.95rem;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .name span{color:var(--bar-muted);font-weight:400}
+.bar .count{font-size:.9rem;color:var(--bar-muted);white-space:nowrap}
+.timer{display:flex;align-items:baseline;gap:.5rem;white-space:nowrap}
+.timer small{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--bar-muted)}
+.timer b{font-family:var(--font-mono);font-weight:500;font-size:1.25rem;font-variant-numeric:tabular-nums}
+.timer.low b{color:#ffb4a8}
+
+/* navigator */
+.navwrap{background:var(--panel);border-bottom:1px solid var(--line)}
+.navwrap .wrap{max-width:1100px;padding-block:.5rem}
+.stripwrap{position:relative;margin-bottom:.35rem}
+.stripwrap::before,.stripwrap::after{content:"";position:absolute;top:0;bottom:0;width:48px;z-index:2;pointer-events:none}
+.stripwrap::before{left:0;background:linear-gradient(to right,var(--panel),transparent)}
+.stripwrap::after{right:0;background:linear-gradient(to left,var(--panel),transparent)}
+.strip{display:flex;align-items:center;gap:4px;overflow-x:auto;padding:6px calc(50% - 17px);scrollbar-width:none;-ms-overflow-style:none}
+.strip::-webkit-scrollbar{display:none}
+.lens{position:absolute;left:50%;top:3px;width:40px;height:40px;margin-left:-20px;border:2px solid var(--ink);border-radius:8px;pointer-events:none;z-index:3}
+.sep{flex:none;font-size:.7rem;font-weight:600;color:var(--muted);padding:0 .35rem 0 .6rem;letter-spacing:.04em}
+.sep:first-child{padding-left:0}
+.sep{scroll-snap-align:none}
+.qn{position:relative;flex:none;width:34px;height:34px;border:1px solid var(--line-strong);border-radius:5px;background:var(--panel);font-family:var(--font-mono);font-size:.8rem;cursor:pointer;font-variant-numeric:tabular-nums}
+.qn.ans{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-soft-ink)}
+.qn.flg{background:var(--flag-soft);border-color:var(--flag-line);color:var(--flag)}
+.qn.flg.ans::after{content:"";position:absolute;left:50%;bottom:3px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--accent)}
+.qn.cur{font-weight:600}
+.grid .qn.cur{outline:2px solid var(--ink);outline-offset:1px}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem 1rem;font-size:.78rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}
+.sw{width:12px;height:12px;border-radius:3px;border:1px solid var(--line-strong);background:var(--panel)}
+.sw.a{background:var(--accent-soft);border-color:var(--accent)}
+.sw.f{background:var(--flag-soft);border-color:var(--flag-line)}
+.sw.c{border:2px solid var(--ink);background:transparent;border-radius:4px}
+
+/* question */
+main{padding-block:1.25rem 7rem}
+.scn{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin-bottom:1rem}
+.scn summary{cursor:pointer;padding:.65rem .9rem;font-size:.9rem;font-weight:500;list-style:none;display:flex;gap:.5rem;align-items:center}
+.scn summary::-webkit-details-marker{display:none}
+.scn summary::before{content:"";width:0;height:0;border-left:5px solid var(--muted);border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+.scn[open] summary::before{transform:rotate(90deg)}
+.scn p{margin:0;padding:0 .9rem .85rem;font-size:.92rem;color:var(--muted);max-width:70ch}
+.qline{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding-bottom:.6rem;margin-bottom:.9rem;border-bottom:1px solid var(--line)}
+.qline h2{margin:0;font-size:1.05rem;font-weight:600;white-space:nowrap}
+.qline h2 span{font-weight:400;color:var(--muted);font-size:.85rem;margin-left:.5rem}
+.stem{font-size:1.05rem;margin:0 0 .5rem;max-width:72ch}
+.instr{font-size:.85rem;font-weight:600;color:var(--muted);margin:0 0 .9rem}
+.instr.err{color:var(--bad)}
+.opts{display:grid;gap:.55rem}
+.opt{display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:start;width:100%;text-align:left;padding:.75rem .9rem;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);cursor:pointer;font-size:.98rem;line-height:1.5}
+.opt:hover{border-color:var(--line-strong)}
+.opt .lt{display:grid;place-items:center;width:28px;height:28px;border:1.5px solid var(--line-strong);border-radius:50%;font-family:var(--font-mono);font-size:.8rem;font-weight:500;color:var(--muted)}
+.opt.multi .lt{border-radius:5px}
+.opt.sel{border:2px solid var(--accent);background:var(--accent-soft);padding:calc(.75rem - 1px) calc(.9rem - 1px)}
+.opt.sel .lt{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt span:last-child{min-width:0}
+
+/* action bar */
+.actions{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.actions .wrap{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;padding-block:.6rem;max-width:1100px}
+.actions .grow{flex:1}
+.actions .grow{text-align:center}
+.btn.next{min-width:7.5rem;justify-content:center}
+.btn.prev{min-width:7.5rem;justify-content:center}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:disabled:hover{border-color:var(--line-strong)}
+.btn.onbar{background:transparent;color:var(--bar-ink);border-color:var(--bar-muted);min-height:34px;padding:.3rem .8rem;font-size:.85rem}
+.btn.onbar:hover{border-color:var(--bar-ink)}
+.pace{display:flex;align-items:baseline;gap:.9rem;white-space:nowrap;font-size:.85rem;color:var(--bar-muted)}
+.pace b{font-family:var(--font-mono);font-weight:500;color:var(--bar-ink);font-size:1rem;font-variant-numeric:tabular-nums;margin-left:.3rem}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:.6rem}
+.mode{display:grid;gap:.2rem;text-align:left;padding:.85rem 1rem;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);cursor:pointer}
+.mode b{font-size:1rem}
+.mode span{font-size:.85rem;color:var(--muted)}
+.mode[aria-checked="true"]{border:2px solid var(--accent);background:var(--accent-soft);padding:calc(.85rem - 1px) calc(1rem - 1px)}
+.mode[aria-checked="true"] span{color:var(--accent-soft-ink)}
+.timing{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr));gap:.6rem}
+.slow{display:grid;gap:.25rem;margin:0;padding:0;list-style:none;font-size:.9rem}
+.slow li{display:flex;justify-content:space-between;gap:.75rem;border-bottom:1px solid var(--line);padding:.35rem 0}
+.slow li span:last-child{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.kbd{font-size:.75rem;color:var(--muted)}
+
+/* cards and screens */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:1.25rem 1.25rem}
+.hero{padding-block:2rem 3rem;display:grid;gap:1.25rem}
+.hero h1{font-size:clamp(1.6rem,4vw,2.1rem);line-height:1.2;margin:0;font-weight:600;text-wrap:balance}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,9.5rem),1fr));gap:.6rem}
+.fact{border:1px solid var(--line);border-radius:var(--r);padding:.65rem .8rem;background:var(--bg)}
+.fact b{display:block;font-family:var(--font-mono);font-size:1.25rem;font-weight:500;font-variant-numeric:tabular-nums}
+.fact span{font-size:.8rem;color:var(--muted)}
+.rules{margin:0;padding-left:1.1rem;display:grid;gap:.35rem;max-width:70ch}
+.scnlist{display:grid;gap:.5rem;margin:0;padding:0;list-style:none;counter-reset:s}
+.scnlist li{display:grid;grid-template-columns:auto 1fr;gap:.6rem;font-size:.92rem}
+.scnlist li::before{counter-increment:s;content:counter(s);font-family:var(--font-mono);font-size:.8rem;width:22px;height:22px;display:grid;place-items:center;border:1px solid var(--line-strong);border-radius:4px;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.note{font-size:.88rem;padding:.65rem .8rem;border-radius:var(--r);background:var(--accent-soft);color:var(--accent-soft-ink)}
+.note.warn{background:var(--flag-soft);color:var(--flag)}
+.note.okn{background:var(--ok-soft);color:var(--ok)}
+.note.badn{background:var(--bad-soft);color:var(--bad)}
+
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem}
+.stat{border:1px solid var(--line);border-radius:var(--r);padding:.7rem .85rem;background:var(--bg)}
+.stat span{font-size:.8rem;color:var(--muted)}
+.stat b{display:block;font-family:var(--font-mono);font-size:1.5rem;font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin:.4rem 0 1rem}
+.grid .qn{width:auto}
+
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:1rem;align-items:center}
+.big{font-family:var(--font-mono);font-size:clamp(2.6rem,9vw,3.6rem);font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
+.verdict{display:inline-block;font-weight:600;font-size:.85rem;padding:.2rem .6rem;border-radius:4px;letter-spacing:.03em}
+.verdict.pass{background:var(--ok-soft);color:var(--ok)}
+.verdict.fail{background:var(--bad-soft);color:var(--bad)}
+table.dt{width:100%;border-collapse:collapse;font-size:.9rem}
+table.dt th{text-align:left;font-weight:600;color:var(--muted);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;padding:.4rem .5rem;border-bottom:1px solid var(--line)}
+table.dt td{padding:.55rem .5rem;border-bottom:1px solid var(--line);vertical-align:middle}
+table.dt td.n{font-family:var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.meter{position:relative;height:8px;border-radius:4px;background:var(--line);min-width:80px}
+.meter i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:var(--ok)}
+.meter i.low{background:var(--bad)}
+.meter::after{content:"";position:absolute;top:-3px;bottom:-3px;left:72%;width:2px;background:var(--ink);opacity:.55}
+.tablewrap{overflow-x:auto}
+.filters{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{border:1px solid var(--line-strong);background:var(--panel);border-radius:999px;padding:.25rem .8rem;font-size:.85rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.rv{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:0;padding:.85rem 1rem;background:var(--panel)}
+.rv.bad{border-left-color:var(--bad)}
+.rv h3{margin:0 0 .35rem;font-size:.9rem;font-weight:600;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.rv h3 .tag{font-weight:500;font-size:.75rem;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 .4rem}
+.rv p{margin:.25rem 0;font-size:.93rem;max-width:75ch}
+.rv .ya{color:var(--muted)}
+.rv .ex{color:var(--muted);font-size:.88rem}
+.rvlist{display:grid;gap:.6rem}
+.link{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer;font-size:inherit}
+pre.copy{white-space:pre-wrap;word-break:break-word;font-family:var(--font-mono);font-size:.78rem;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:.6rem;max-height:10rem;overflow:auto}
+@media (max-width:560px){
+  .bar .name span{display:none}
+  .bar .count{display:none}
+  .timer small,.pace .lbl{display:none}
+  .bar .name{font-size:.85rem}
+  .kbd{visibility:hidden}
+  .only-long{display:none}
+  .only-short{display:inline}
+  .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+/* strike-out */
+.optrow{display:grid;grid-template-columns:1fr auto;gap:.4rem;align-items:stretch}
+.opt.struck{opacity:.55}
+.opt.struck .ot{text-decoration:line-through;text-decoration-thickness:1.5px}
+.opt.struck .lt{border-style:dashed}
+.strikebtn{width:36px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);color:var(--muted);cursor:pointer;font-size:.85rem;opacity:.5}
+.strikebtn:hover{opacity:1;border-color:var(--line-strong)}
+.strikebtn[aria-pressed="true"]{opacity:1;background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.strikebtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;opacity:1}
+@media (hover:hover) and (pointer:fine){.optrow{grid-template-columns:1fr}.strikebtn{display:none}}
+.bar a.home{color:var(--bar-ink);text-decoration:none}
+.bar a.home:hover{text-decoration:underline}
+.bar .name span{color:var(--bar-muted);font-weight:400}
+a.btn{text-decoration:none;color:inherit}
+.err-page{padding-block:3rem;display:grid;gap:1rem}
+</style>
+</head>
+<body>
+<div class="bar" id="bar" hidden>
+  <div class="wrap">
+    <div class="name"><a class="home" href="index.html" title="All tests">Mock Lab</a> <span id="examName"></span></div>
+    <div class="count" id="count"></div>
+    <div class="timer" id="timer"><small>Time remaining</small><b id="clock"></b></div>
+    <div class="pace" id="pace" hidden><span><span class="lbl">Active time</span><b id="activeClock">0:00:00</b></span><span><span class="lbl">This question</span><b id="qClock">0:00</b></span></div>
+    <button class="btn onbar" id="reviewBtn" type="button"><span class="only-long">Review and submit</span><span class="only-short">Review</span></button>
+  </div>
+</div>
+
+<div class="navwrap" id="navwrap" hidden>
+  <div class="wrap">
+    <div class="stripwrap"><div class="strip" id="strip" aria-label="Question navigator"></div><div class="lens" aria-hidden="true"></div></div>
+    <div class="legend"><span><i class="sw a"></i>Answered</span><span><i class="sw f"></i>Marked for review</span><span><i class="sw"></i>Not answered</span><span><i class="sw c"></i>Current</span></div>
+  </div>
+</div>
+
+<main class="wrap" id="screen"></main>
+
+<div class="actions" id="actions" hidden>
+  <div class="wrap">
+    <button class="btn prev" id="prevBtn" type="button">Previous</button>
+    <span class="grow"><span class="kbd">Keys: A–E select · Shift+A–E strike out · ← → move · M mark · Right-click to strike out</span></span>
+    <button class="btn primary next" id="nextBtn" type="button">Next</button>
+  </div>
+</div>
+
+<script src="exams/catalog.js"></script>
+<script>
+/* Load the test named in the URL (exam.html?id=mock1), then start the exam app. */
+(function () {
+  var id = new URLSearchParams(location.search).get("id") || "";
+  var entry = (window.CATALOG || []).find(function (c) { return c.id === id; });
+  if (!entry) {
+    var m = document.getElementById("screen");
+    m.innerHTML = '<section class="err-page"><h1>Test not found</h1><p class="muted">This link doesn\'t match any test.</p><p><a class="btn primary" href="index.html">See all tests</a></p></section>';
+    return;
+  }
+  var s = document.createElement("script");
+  s.src = "exams/" + entry.id + ".js";
+  s.onload = function () { document.title = EXAM.title + " · Mock Lab"; document.getElementById("examName").textContent = "· " + EXAM.title; startApp(); };
+  s.onerror = function () { document.getElementById("screen").innerHTML = '<section class="err-page"><h1>Couldn\'t load this test</h1><p><a class="btn" href="index.html">Back to all tests</a></p></section>'; };
+  document.head.appendChild(s);
+})();
+function startApp() {
+const EXAM_ID = EXAM.id, EXAM_TITLE = EXAM.title, INTRO = EXAM.intro;
+const IDLE = 180;
+const LS_KEY = "openexam-" + EXAM_ID + "-progress-v1";
+const Q = EXAM.questions, SC = EXAM.scenarios;
+const MULTI_COUNT = Q.filter((q) => Array.isArray(q.a)).length;
+const N = Q.length, LIMIT = N * 120, PASS = Math.ceil(N * 0.72);
+const BLOCKS = SC.map((_, s) => Q.map((q, k) => (q.s === s ? k : -1)).filter((k) => k >= 0));
+const L = (k) => String.fromCharCode(65 + k);
+const isMulti = (q) => Array.isArray(q.a);
+const FLAG_SVG = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3.5 14V2.5M3.5 3h8l-1.6 2.8L11.5 8.6h-8"/></svg>';
+const REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const blankAnswers = () => Q.map((q) => (isMulti(q) ? [] : null));
+const S = { view: "start", mode: "timed", pickMode: "timed", i: 0, startedAt: null, answers: blankAnswers(), flags: [], qtime: Q.map(() => 0), strikes: Q.map(() => []), reviewSec: 0, submitted: null, armed: false, scnOpen: true, filter: "all" };
+let tick = null, remoteResume = null, lastResult = null, lastActive = Date.now(), tickCount = 0;
+
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const answered = (k) => (isMulti(Q[k]) ? S.answers[k].length === 2 : S.answers[k] !== null);
+const correct = (k) => { const q = Q[k], a = S.answers[k]; return isMulti(q) ? a.length === 2 && q.a.every((x) => a.includes(x)) : a === q.a; };
+const fmtA = (k) => (isMulti(Q[k]) ? (S.answers[k].length ? S.answers[k].slice().sort().map(L).join("") : "-") : S.answers[k] === null ? "-" : L(S.answers[k]));
+const fmtC = (k) => (isMulti(Q[k]) ? Q[k].a.map(L).join("") : L(Q[k].a));
+const hms = (s) => { s = Math.max(0, Math.round(s)); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60; return h + ":" + String(m).padStart(2, "0") + ":" + String(x).padStart(2, "0"); };
+const ms = (s) => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+const left = () => (S.startedAt ? LIMIT - (Date.now() - S.startedAt) / 1000 : LIMIT);
+const activeSec = () => S.qtime.reduce((a, b) => a + b, 0) + S.reviewSec;
+const answeredCount = (answers) => answers.filter((a) => (Array.isArray(a) ? a.length === 2 : a !== null)).length;
+
+/* Render identifiers (snake_case names, flags, paths, globs) as code. Text only, never HTML. */
+const TOK = /(\$\{[A-Z_]+\}|--[a-z][a-z-]+|\*\*\/[\w*.\/-]+|~\/[\w.\/-]+|\.claude\/[\w.\/-]*|\.mcp\.json|CLAUDE\.md|SKILL\.md|\b[a-zA-Z]+(?:_[a-zA-Z0-9]+)+\b|\b(?:PreToolUse|PostToolUse|end_turn|tool_use|stop_reason|isError|isRetryable|errorCategory)\b)/g;
+function rich(node, text) {
+  let last = 0; text.replace(TOK, (m, _g, off) => { if (off > last) node.append(document.createTextNode(text.slice(last, off))); node.append(el("code", "t", m)); last = off + m.length; return m; });
+  if (last < text.length) node.append(document.createTextNode(text.slice(last)));
+  return node;
+}
+
+/* ---------- activity (time counts only while the page is visible and you've been active recently) ---------- */
+["pointerdown", "pointermove", "keydown", "scroll", "touchstart", "wheel"].forEach((ev) => window.addEventListener(ev, () => { lastActive = Date.now(); }, { passive: true }));
+const isActive = () => document.visibilityState === "visible" && (Date.now() - lastActive) / 1000 < IDLE;
+
+/* ---------- persistence ---------- */
+function snapshot() { return { mode: S.mode, startedAt: S.startedAt, answers: S.answers, flags: S.flags, i: S.i, qtime: S.qtime, strikes: S.strikes, reviewSec: S.reviewSec, status: S.submitted ? "submitted" : "in_progress", result: S.submitted || null, updatedAt: Date.now() }; }
+function saveLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify(snapshot())); } catch (e) {} }
+function loadLocal() { try { return JSON.parse(localStorage.getItem(LS_KEY) || "null"); } catch (e) { return null; } }
+function persist() { saveLocal(); }
+function flushNow() {}
+function resumable(p) {
+  if (!p || p.status !== "in_progress" || !p.startedAt) return false;
+  return p.mode === "practice" ? true : Date.now() - p.startedAt < LIMIT * 1000 + 5000;
+}
+
+/* ---------- screens ---------- */
+function show(view) { S.view = view; S.armed = false; render(); window.scrollTo(0, 0); }
+function render() {
+  const inExam = S.view === "q" || S.view === "review";
+  $("bar").hidden = !inExam && S.view !== "result";
+  $("navwrap").hidden = S.view !== "q";
+  $("actions").hidden = S.view !== "q";
+  $("timer").hidden = !inExam || S.mode !== "timed";
+  $("pace").hidden = !inExam || S.mode !== "practice";
+  $("reviewBtn").hidden = S.view !== "q";
+  $("count").textContent = S.view === "q" ? "Question " + (S.i + 1) + " of " + Q.length : "";
+  if (S.view === "start") renderStart();
+  else if (S.view === "q") renderQ();
+  else if (S.view === "review") renderReview();
+  else renderResult();
+}
+
+function renderStart() {
+  const m = $("screen"); m.replaceChildren();
+  const hero = el("section", "hero");
+  const head = el("div"); head.append(el("div", "eyebrow", "Claude Certified Architect – Foundations · practice"), el("h1", null, EXAM_TITLE));
+  const p = el("p", "muted", INTRO);
+  p.style.margin = ".5rem 0 0"; p.style.maxWidth = "62ch"; head.append(p);
+  hero.append(head);
+  const facts = el("div", "facts");
+  [[String(N), "scored questions"], [hms(LIMIT), "time limit in timed mode (2 min a question)"], [String(SC.length), SC.length === 1 ? "scenario" : "scenarios, " + BLOCKS.map((x) => x.length).join(" + ") + " questions"], [PASS + " / " + N, "approximate pass mark (72%)"]].forEach(([b, s]) => { const f = el("div", "fact"); f.append(el("b", null, b), el("span", null, s)); facts.append(f); });
+  hero.append(facts);
+  const card = el("div", "card"); card.style.display = "grid"; card.style.gap = "1rem";
+  const local = loadLocal();
+  const res = remoteResume || (resumable(local) ? local : null);
+
+  if (!res) {
+    const mh = el("div"); mh.append(el("div", "eyebrow", "Choose how to take it")); mh.lastChild.style.marginBottom = ".5rem";
+    const modes = el("div", "modes"); modes.setAttribute("role", "radiogroup");
+    [["timed", "Timed exam", "One clock at the real exam's pace (" + hms(LIMIT) + " for " + N + " questions). Submits itself when time runs out."],
+     ["practice", "Practice mode", "No time limit, so you can spread it over several sittings. Time on each question is tracked so you can estimate your pace."]].forEach(([k, t, d]) => {
+      const b = el("button", "mode"); b.type = "button"; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", S.pickMode === k ? "true" : "false");
+      b.append(el("b", null, t), el("span", null, d)); b.onclick = () => { S.pickMode = k; renderStart(); };
+      modes.append(b);
+    });
+    mh.append(modes); card.append(mh);
+  }
+  const r = el("ul", "rules");
+  ["Most questions have one correct answer. " + MULTI_COUNT + " say \"Select two\"; both picks must be right to score.",
+   "Unanswered questions score as wrong, and there's no penalty for guessing.",
+   "No feedback until you submit. Mark questions for review and come back to them from the navigator or the review screen.",
+   "Right-click an option (or tap its ✕ on a phone) to strike it out while you eliminate answers. Right-click again to undo.",
+   "Your progress saves in this browser as you go, so you can resume if the page reloads. Question time counts only while the page is open and you've been active in the last 3 minutes."].forEach((t) => r.append(el("li", null, t)));
+  const sl = el("ol", "scnlist"); SC.forEach((s) => { const li = el("li"); li.append(el("span", null, s.name)); sl.append(li); });
+  const sh = el("div"); sh.append(el("div", "eyebrow", "Scenarios in this exam")); sh.lastChild.style.marginBottom = ".5rem"; sh.append(sl);
+  card.append(r, sh);
+  const row = el("div", "row");
+  if (res) {
+    const rb = el("button", "btn primary", "Resume exam"); rb.type = "button"; rb.onclick = () => begin(res);
+    const over = el("button", "btn", "Start over"); over.type = "button"; over.onclick = () => { remoteResume = null; try { localStorage.removeItem(LS_KEY); } catch (e) {} render(); };
+    const info = res.mode === "practice" ? "Practice mode · " + answeredCount(res.answers) + " answered · " + hms((res.qtime || []).reduce((a, b) => a + b, 0) + (res.reviewSec || 0)) + " active so far"
+                                         : "Timed exam · " + answeredCount(res.answers) + " answered · " + hms(LIMIT - (Date.now() - res.startedAt) / 1000) + " left";
+    row.append(rb, over, el("span", "muted", info));
+  } else {
+    const start = el("button", "btn primary", S.pickMode === "practice" ? "Start practice mode" : "Start timed exam"); start.type = "button";
+    start.onclick = () => begin(null, S.pickMode);
+    row.append(start);
+  }
+  const last = lastResult || (local && local.status === "submitted" && local.result ? local : null);
+  if (!res && last) {
+    const vb = el("button", "btn", "View your last result (" + last.result.score + "/" + N + ")"); vb.type = "button";
+    vb.onclick = () => { S.mode = last.result.mode || last.mode || "timed"; S.startedAt = last.startedAt; S.answers = last.answers.map((a, k) => (isMulti(Q[k]) ? (Array.isArray(a) ? a : []) : a)); S.flags = last.flags || []; S.qtime = last.qtime || last.result.qtime || Q.map(() => 0); S.reviewSec = last.reviewSec || 0; S.submitted = last.result; S.saveState = "saved"; show("result"); };
+    row.append(vb);
+  }
+  card.append(row);
+  card.append(el("div", "note", "Your answers and results stay in this browser only. Nothing is sent anywhere."));
+  hero.append(card);
+  m.append(hero);
+}
+
+function begin(res, mode) {
+  if (res) {
+    S.mode = res.mode || "timed"; S.startedAt = res.startedAt;
+    S.answers = res.answers.map((a, k) => (isMulti(Q[k]) ? (Array.isArray(a) ? a : []) : a));
+    S.flags = res.flags || []; S.i = res.i || 0; S.qtime = (res.qtime && res.qtime.length === Q.length) ? res.qtime.slice() : Q.map(() => 0); S.reviewSec = res.reviewSec || 0;
+    S.strikes = (res.strikes && res.strikes.length === Q.length) ? res.strikes : Q.map(() => []);
+  } else {
+    S.mode = mode || "timed"; S.startedAt = Date.now(); S.answers = blankAnswers(); S.flags = []; S.i = 0; S.qtime = Q.map(() => 0); S.strikes = Q.map(() => []); S.reviewSec = 0;
+  }
+  S.submitted = null; remoteResume = null; lastActive = Date.now(); stripBuilt = false;
+  persist(); flushNow();
+  clearInterval(tick); tick = setInterval(onTick, 1000); onTick(true);
+  show("q");
+}
+function onTick(first) {
+  if (!first && isActive()) {
+    if (S.view === "q") S.qtime[S.i]++;
+    else if (S.view === "review") S.reviewSec++;
+    if (++tickCount % 15 === 0) persist();
+  }
+  if (S.mode === "timed") {
+    const s = left(); $("clock").textContent = hms(s); $("timer").classList.toggle("low", s <= 900);
+    if (s <= 0 && !S.submitted) submit(true);
+  } else {
+    $("activeClock").textContent = hms(activeSec());
+    $("qClock").textContent = ms(S.qtime[S.i] || 0);
+  }
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden" && S.startedAt && !S.submitted) persist(); });
+
+function go(k) { if (k < 0 || k >= Q.length) return; S.i = k; S.armed = false; persist(); if (S.view !== "q") show("q"); else { render(); window.scrollTo(0, 0); } }
+function pick(k) {
+  const q = Q[S.i];
+  const sp = S.strikes[S.i].indexOf(k); if (sp >= 0) S.strikes[S.i].splice(sp, 1);
+  if (isMulti(q)) {
+    const a = S.answers[S.i], p = a.indexOf(k);
+    if (p >= 0) a.splice(p, 1);
+    else { if (a.length >= 2) { const ins = $("instr"); ins.textContent = "Select two only. Clear one of your answers first."; ins.classList.add("err"); return; } a.push(k); }
+  } else S.answers[S.i] = k;
+  persist(); renderQ();
+}
+function toggleStrike(k) {
+  const st = S.strikes[S.i], p = st.indexOf(k);
+  if (p >= 0) st.splice(p, 1);
+  else {
+    st.push(k);
+    const q = Q[S.i];
+    if (isMulti(q)) { const a = S.answers[S.i], x = a.indexOf(k); if (x >= 0) a.splice(x, 1); }
+    else if (S.answers[S.i] === k) S.answers[S.i] = null;
+  }
+  persist(); render();
+}
+function toggleFlag() { const p = S.flags.indexOf(S.i); if (p >= 0) S.flags.splice(p, 1); else S.flags.push(S.i); persist(); render(); }
+
+function qnBtn(k) {
+  const b = el("button", "qn", String(k + 1)); b.type = "button"; b.dataset.k = k;
+  b.onclick = () => go(k);
+  return b;
+}
+function paintQn(b, k, withCur) {
+  b.className = "qn" + (answered(k) ? " ans" : "") + (S.flags.includes(k) ? " flg" : "") + (withCur && k === S.i ? " cur" : "");
+  b.setAttribute("aria-label", "Question " + (k + 1) + (answered(k) ? ", answered" : ", not answered") + (S.flags.includes(k) ? ", marked for review" : "") + (withCur && k === S.i ? ", current" : ""));
+  if (withCur && k === S.i) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current");
+}
+let stripBuilt = false, lastCentered = -1;
+function updateStrip() {
+  const strip = $("strip");
+  if (!stripBuilt) {
+    strip.replaceChildren();
+    for (let b = 0; b < SC.length; b++) { strip.append(el("span", "sep", "S" + (b + 1))); BLOCKS[b].forEach((k) => strip.append(qnBtn(k))); }
+    stripBuilt = true; lastCentered = -1;
+  }
+  strip.querySelectorAll(".qn").forEach((b) => paintQn(b, +b.dataset.k, true));
+  const cur = strip.querySelector('.qn[data-k="' + S.i + '"]');
+  if (cur) {
+    const target = cur.offsetLeft + cur.offsetWidth / 2 - strip.clientWidth / 2;
+    const smooth = !REDUCED && lastCentered !== -1 && lastCentered !== S.i;
+    strip.scrollTo({ left: target, behavior: smooth ? "smooth" : "auto" });
+    lastCentered = S.i;
+  }
+}
+
+function renderQ() {
+  const q = Q[S.i], multi = isMulti(q);
+  $("count").textContent = "Question " + (S.i + 1) + " of " + Q.length;
+  updateStrip();
+  if (S.mode === "practice") $("qClock").textContent = ms(S.qtime[S.i] || 0);
+
+  const m = $("screen"); m.replaceChildren();
+  const d = el("details", "scn"); d.open = S.scnOpen; d.ontoggle = () => { S.scnOpen = d.open; };
+  const su = el("summary", null, "Scenario " + (q.s + 1) + " of " + SC.length + " · " + SC[q.s].name);
+  d.append(su, rich(el("p"), SC[q.s].text));
+  const ql = el("div", "qline");
+  const h = el("h2", null, "Question " + (S.i + 1)); h.append(el("span", null, "of " + Q.length));
+  const fb = el("button", "btn" + (S.flags.includes(S.i) ? " flag-on" : ""), null); fb.type = "button";
+  fb.innerHTML = FLAG_SVG; fb.append(document.createTextNode(S.flags.includes(S.i) ? "Marked for review" : "Mark for review"));
+  fb.setAttribute("aria-pressed", S.flags.includes(S.i) ? "true" : "false"); fb.onclick = toggleFlag;
+  ql.append(h, fb);
+  const stem = rich(el("p", "stem"), q.q.replace(/^Select two\.\s*/, ""));
+  const ins = el("p", "instr", multi ? "Select TWO answers. (" + S.answers[S.i].length + " of 2 selected)" : "Select ONE answer."); ins.id = "instr";
+  const opts = el("div", "opts"); opts.setAttribute("role", multi ? "group" : "radiogroup");
+  q.o.forEach((t, k) => {
+    const sel = multi ? S.answers[S.i].includes(k) : S.answers[S.i] === k;
+    const struck = S.strikes[S.i].includes(k);
+    const row = el("div", "optrow");
+    const b = el("button", "opt" + (multi ? " multi" : "") + (sel ? " sel" : "") + (struck ? " struck" : "")); b.type = "button";
+    b.setAttribute("role", multi ? "checkbox" : "radio"); b.setAttribute("aria-checked", sel ? "true" : "false");
+    if (struck) b.setAttribute("aria-description", "struck out");
+    b.append(el("span", "lt", L(k)), rich(el("span", "ot"), t));
+    b.onclick = () => pick(k);
+    b.oncontextmenu = (e) => { e.preventDefault(); toggleStrike(k); };
+    const x = el("button", "strikebtn", "✕"); x.type = "button";
+    x.setAttribute("aria-label", (struck ? "Undo strike-out of option " : "Strike out option ") + L(k)); x.title = struck ? "Undo strike-out" : "Strike out";
+    x.setAttribute("aria-pressed", struck ? "true" : "false");
+    x.onclick = () => toggleStrike(k);
+    row.append(b, x);
+    opts.append(row);
+  });
+  m.append(d, ql, stem, ins, opts);
+
+  $("prevBtn").disabled = S.i === 0;
+  $("prevBtn").onclick = () => go(S.i - 1);
+  $("nextBtn").textContent = S.i === Q.length - 1 ? "Go to review" : "Next";
+  $("nextBtn").onclick = () => (S.i === Q.length - 1 ? show("review") : go(S.i + 1));
+  $("reviewBtn").onclick = () => show("review");
+}
+
+function renderReview() {
+  const un = Q.map((_, k) => k).filter((k) => !answered(k)), fl = S.flags.slice().sort((a, b) => a - b);
+  const m = $("screen"); m.replaceChildren();
+  const c = el("section", "card"); c.style.display = "grid"; c.style.gap = "1rem";
+  const hd = el("div"); hd.append(el("div", "eyebrow", "Review"), el("h2", null, "Check your answers before submitting")); hd.lastChild.style.margin = ".2rem 0 0"; hd.lastChild.style.fontSize = "1.25rem";
+  const st = el("div", "stats");
+  [["Answered", Q.length - un.length, ""], ["Not answered", un.length, un.length ? "var(--bad)" : ""], ["Marked for review", fl.length, fl.length ? "var(--flag)" : ""]].forEach(([l, v, col]) => { const s = el("div", "stat"); s.append(el("span", null, l)); const b = el("b", null, String(v)); if (col) b.style.color = col; s.append(b); st.append(s); });
+  c.append(hd, st);
+  for (let b = 0; b < SC.length; b++) {
+    const g = el("div"); g.append(el("div", "eyebrow", "Scenario " + (b + 1) + " · " + SC[b].name));
+    const grid = el("div", "grid"); BLOCKS[b].forEach((k) => { const qb = qnBtn(k); paintQn(qb, k, false); grid.append(qb); });
+    g.append(grid); c.append(g);
+  }
+  const lg = el("div", "legend"); lg.innerHTML = '<span><i class="sw a"></i>Answered</span><span><i class="sw f"></i>Marked for review</span><span><i class="sw"></i>Not answered</span>';
+  const msg = el("div", "note warn"); msg.hidden = true;
+  const row = el("div", "row");
+  const b3 = el("button", "btn", "Return to exam"); b3.type = "button"; b3.onclick = () => show("q");
+  const b1 = el("button", "btn", "Review marked (" + fl.length + ")"); b1.type = "button"; b1.onclick = () => { if (fl.length) go(fl[0]); else { msg.textContent = "No questions are marked for review."; msg.hidden = false; } };
+  const b2 = el("button", "btn", "Review unanswered (" + un.length + ")"); b2.type = "button"; b2.onclick = () => { if (un.length) go(un[0]); else { msg.textContent = "Every question has an answer."; msg.hidden = false; } };
+  const sp = el("span", "grow"); sp.style.flex = "1";
+  const b4 = el("button", "btn primary", S.armed ? "Confirm submit" : "Submit exam"); b4.type = "button";
+  b4.onclick = () => { if (!S.armed && (un.length || fl.length)) { S.armed = true; msg.textContent = (un.length ? un.length + " not answered" : "") + (un.length && fl.length ? " and " : "") + (fl.length ? fl.length + " marked for review" : "") + ". Unanswered questions score as wrong. Select Confirm submit to finish."; msg.hidden = false; b4.textContent = "Confirm submit"; return; } submit(false); };
+  row.append(b3, b1, b2, sp, b4);
+  c.append(lg, msg, row);
+  m.append(c);
+}
+
+/* ---------- results ---------- */
+function compute(timedOut) {
+  const active = activeSec();
+  const used = S.mode === "timed" ? Math.min(LIMIT, Math.round((Date.now() - S.startedAt) / 1000)) : active;
+  const byDomain = {}, byScenario = SC.map(() => [0, 0]);
+  let score = 0; const wrong = [], answers = [];
+  Q.forEach((q, k) => {
+    byDomain[q.d] = byDomain[q.d] || [0, 0]; byDomain[q.d][1]++; byScenario[q.s][1]++;
+    const ok = correct(k); if (ok) { score++; byDomain[q.d][0]++; byScenario[q.s][0]++; } else wrong.push({ q: k + 1, yours: fmtA(k), correct: fmtC(k), task: q.t });
+    answers.push(fmtA(k));
+  });
+  return { exam: EXAM_ID, mode: S.mode, startedAt: S.startedAt, submittedAt: Date.now(), timeUsedSec: used, activeSec: active, reviewSec: S.reviewSec, qtime: S.qtime.slice(), timedOut, score, total: Q.length, passed: score >= PASS, answers, flagged: S.flags.slice().sort((a, b) => a - b).map((k) => k + 1), wrong, byDomain, byScenario };
+}
+function paceOf(r) {
+  if (!r.qtime) return null;
+  const qs = r.qtime, sum = qs.reduce((a, b) => a + b, 0), seen = qs.filter((x) => x > 0).length || 1;
+  const avg = sum / seen, projected = avg * Q.length + (r.reviewSec || 0);
+  return { sum, avg, projected, margin: LIMIT - projected };
+}
+function resultText(r) {
+  const p = paceOf(r);
+  return EXAM_TITLE + " result (" + (r.mode === "practice" ? "practice mode, untimed" : "timed") + "): " + r.score + "/" + N + " (" + Math.round((100 * r.score) / N) + "%)" +
+    (r.mode === "practice" ? ", active time " + hms(r.activeSec || 0) : " in " + hms(r.timeUsedSec) + " of " + hms(LIMIT) + (r.timedOut ? " (timed out)" : "")) +
+    (p ? ", average " + ms(p.avg) + " per question" : "") +
+    ". Marked at submit: " + (r.flagged.length ? r.flagged.join(",") : "none") + ". Wrong (yours>correct): " + (r.wrong.length ? r.wrong.map((w) => w.q + ":" + w.yours + ">" + w.correct).join(", ") : "none") +
+    ". All answers: " + r.answers.map((a, k) => k + 1 + a).join(" ") + ".";
+}
+async function submit(timedOut) {
+  if (S.submitted) return;
+  clearInterval(tick);
+  S.submitted = compute(timedOut);
+  S.saveState = "local";
+  saveLocal();
+  show("result");
+}
+
+function renderResult() {
+  const r = S.submitted; const m = $("screen"); m.replaceChildren();
+  const qtime = r.qtime || S.qtime;
+  const hasTiming = !!r.qtime;
+  const wrapG = el("div"); wrapG.style.display = "grid"; wrapG.style.gap = "1rem"; wrapG.style.paddingTop = ".5rem";
+  const top = el("section", "card score");
+  const a = el("div"); a.append(el("div", "eyebrow", r.timedOut ? "Time ran out · submitted automatically" : (r.mode === "practice" ? "Submitted · practice mode" : "Submitted · timed exam")));
+  const big = el("div", "big", r.score + " / " + N); big.style.margin = ".35rem 0";
+  const v = el("span", "verdict " + (r.passed ? "pass" : "fail"), r.passed ? "Above the pass mark" : "Below the pass mark");
+  a.append(big, v);
+  const b = el("div"); b.style.display = "grid"; b.style.gap = ".35rem";
+  const rows = [["Percent correct", Math.round((100 * r.score) / N) + "%"], ["Pass mark (approx.)", PASS + " / " + N],
+    r.mode === "practice" ? ["Active time", hms(r.activeSec || 0)] : ["Time used", hms(r.timeUsedSec) + " of " + hms(LIMIT)], ["Marked at submit", String(r.flagged.length)]];
+  rows.forEach(([l, x]) => { const row = el("div", "row"); row.style.justifyContent = "space-between"; row.append(el("span", "muted", l)); const vv = el("b", null, x); vv.style.fontFamily = "var(--font-mono)"; vv.style.fontWeight = "500"; row.append(vv); b.append(row); });
+  top.append(a, b);
+  const save = el("div", "note", "Your result is saved in this browser. Use Copy results to keep a text summary or share it.");
+  const cp = el("div"); cp.style.display = "grid"; cp.style.gap = ".5rem";
+  const cpRow = el("div", "row"); const cb = el("button", "btn", "Copy results"); cb.type = "button";
+  const pre = el("pre", "copy", resultText(r)); pre.hidden = true;
+  cb.onclick = async () => { try { await navigator.clipboard.writeText(resultText(r)); cb.textContent = "Copied"; } catch (e) { pre.hidden = false; const sel = window.getSelection(); const rg = document.createRange(); rg.selectNodeContents(pre); sel.removeAllRanges(); sel.addRange(rg); cb.textContent = "Select and copy the text below"; } };
+  const again = el("button", "btn", "Retake from the start"); again.type = "button"; again.onclick = () => { S.submitted = null; S.view = "start"; lastResult = null; try { localStorage.removeItem(LS_KEY); } catch (e) {} render(); };
+  const home = el("a", "btn", "All tests"); home.href = "index.html"; cpRow.append(cb, again, home); cp.append(save, cpRow, pre);
+
+  const sections = [top, cp];
+  const pace = paceOf(r);
+  if (pace) {
+    const tc = el("section", "card"); tc.style.display = "grid"; tc.style.gap = ".9rem";
+    tc.append(el("div", "eyebrow", "Your pace"));
+    const tg = el("div", "timing");
+    const over = pace.margin < 0;
+    [["Average per question", ms(pace.avg)], ["Real exam budget per question", "2:00"], ["This test at this pace", hms(pace.projected)], [over ? "Over the time limit by" : "Time left for review", hms(Math.abs(pace.margin))]].forEach(([l, x], i) => {
+      const s = el("div", "stat"); s.append(el("span", null, l)); const bb = el("b", null, x); if (i === 3) bb.style.color = over ? "var(--bad)" : "var(--ok)"; s.append(bb); tg.append(s);
+    });
+    tc.append(tg);
+    const byS = el("div", "tablewrap"); const ts = el("table", "dt"); ts.innerHTML = "<thead><tr><th>Scenario</th><th style=\"text-align:right\">Average</th><th style=\"text-align:right\">Total</th></tr></thead>"; const tbs = el("tbody");
+    SC.forEach((s, k) => { const qs = BLOCKS[k].map((i) => qtime[i] || 0); const sum = qs.reduce((x, y) => x + y, 0); const tr = el("tr"); tr.append(el("td", null, (k + 1) + ". " + s.name), el("td", "n", ms(sum / Math.max(1, qs.length))), el("td", "n", hms(sum))); tbs.append(tr); });
+    ts.append(tbs); byS.append(ts);
+    const slowH = el("div", "eyebrow", "Slowest questions"); slowH.style.marginTop = ".25rem";
+    const slow = el("ul", "slow");
+    qtime.map((t, k) => [t, k]).sort((x, y) => y[0] - x[0]).slice(0, 5).forEach(([t, k]) => { const li = el("li"); li.append(el("span", null, "Q" + (k + 1) + " · " + Q[k].d + " " + Q[k].t + " · " + (correct(k) ? "correct" : "wrong")), el("span", null, ms(t))); slow.append(li); });
+    tc.append(byS, slowH, slow, el("p", "muted", "Time counts only while the page was open and you had been active in the last 3 minutes."));
+    tc.lastChild.style.margin = "0"; tc.lastChild.style.fontSize = ".85rem";
+    sections.push(tc);
+  }
+
+  const dom = el("section", "card"); dom.append(el("div", "eyebrow", "By domain"));
+  const names = { D1: "Agentic architecture and orchestration", D2: "Tool design and MCP integration", D3: "Claude Code configuration and workflows", D4: "Prompt engineering and structured output", D5: "Context management and reliability" };
+  const weights = { D1: "27%", D2: "18%", D3: "20%", D4: "20%", D5: "15%" };
+  const tw = el("div", "tablewrap"); const t = el("table", "dt");
+  t.innerHTML = "<thead><tr><th>Domain</th><th>Weight</th><th style=\"text-align:right\">Score</th><th>vs 72% line</th></tr></thead>";
+  const tb = el("tbody");
+  Object.keys(r.byDomain).sort().forEach((d) => { const [c, n] = r.byDomain[d]; const tr = el("tr"); const td1 = el("td"); td1.append(el("b", null, d + " "), document.createTextNode(names[d])); tr.append(td1, el("td", "muted", weights[d]), el("td", "n", c + "/" + n + " · " + Math.round((100 * c) / n) + "%")); const td = el("td"); const mt = el("div", "meter"); const i = el("i", (c / n) < 0.72 ? "low" : ""); i.style.width = Math.round((100 * c) / n) + "%"; mt.append(i); td.append(mt); tr.append(td); tb.append(tr); });
+  t.append(tb); tw.append(t); dom.append(tw);
+  const sc = el("section", "card"); sc.append(el("div", "eyebrow", "By scenario"));
+  const tw2 = el("div", "tablewrap"); const t2 = el("table", "dt"); t2.innerHTML = "<thead><tr><th>Scenario</th><th style=\"text-align:right\">Score</th></tr></thead>"; const tb2 = el("tbody");
+  r.byScenario.forEach(([c, n], k) => { const tr = el("tr"); tr.append(el("td", null, (k + 1) + ". " + SC[k].name), el("td", "n", c + "/" + n)); tb2.append(tr); });
+  t2.append(tb2); tw2.append(t2); sc.append(tw2);
+
+  const rvs = el("section"); rvs.style.display = "grid"; rvs.style.gap = ".75rem";
+  const rh = el("div", "row"); rh.style.justifyContent = "space-between"; rh.append(el("div", "eyebrow", "Answer review"));
+  const fl = el("div", "filters");
+  [["all", "All " + N], ["wrong", "Wrong (" + r.wrong.length + ")"], ["marked", "Marked (" + r.flagged.length + ")"]].forEach(([k, lab]) => { const c = el("button", "chip", lab); c.type = "button"; c.setAttribute("aria-pressed", S.filter === k ? "true" : "false"); c.onclick = () => { S.filter = k; renderResult(); }; fl.append(c); });
+  rh.append(fl); rvs.append(rh);
+  const list = el("div", "rvlist");
+  Q.forEach((q, k) => {
+    const ok = correct(k);
+    if (S.filter === "wrong" && ok) return;
+    if (S.filter === "marked" && !r.flagged.includes(k + 1)) return;
+    const card = el("article", "rv" + (ok ? "" : " bad"));
+    const h = el("h3", null, "Q" + (k + 1) + " · " + (ok ? "Correct" : answered(k) ? "Wrong" : "Not answered")); h.style.color = ok ? "var(--ok)" : "var(--bad)";
+    h.append(el("span", "tag", "Scenario " + (q.s + 1)), el("span", "tag", q.d + " · " + q.t));
+    if (hasTiming) h.append(el("span", "tag", "Time " + ms(qtime[k])));
+    const txt = (idx) => [].concat(idx).map((x) => L(x) + ") " + q.o[x]).join("  ·  ");
+    const mine = isMulti(q) ? S.answers[k].slice().sort() : S.answers[k];
+    const has = isMulti(q) ? mine.length : mine !== null;
+    card.append(h, rich(el("p"), q.q), rich(el("p", "ya"), "Your answer: " + (has ? txt(mine) : "none")), rich(el("p"), "Correct: " + txt(q.a)), rich(el("p", "ex"), q.e));
+    list.append(card);
+  });
+  if (!list.children.length) list.append(el("p", "muted", "No questions in this view."));
+  rvs.append(list);
+  sections.push(dom, sc, rvs);
+  wrapG.append(...sections);
+  m.append(wrapG);
+}
+
+/* ---------- keyboard ---------- */
+document.addEventListener("keydown", (e) => {
+  if (S.view !== "q" || e.metaKey || e.ctrlKey || e.altKey) return;
+  const q = Q[S.i], k = e.key.toUpperCase();
+  const idx = "ABCDE".indexOf(k);
+  if (idx >= 0 && idx < q.o.length) { e.preventDefault(); if (e.shiftKey) toggleStrike(idx); else pick(idx); }
+  else if (e.key === "ArrowRight") { e.preventDefault(); S.i === Q.length - 1 ? show("review") : go(S.i + 1); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); go(S.i - 1); }
+  else if (k === "M") { e.preventDefault(); toggleFlag(); }
+});
+window.addEventListener("resize", () => { if (S.view === "q") { lastCentered = -1; updateStrip(); } });
+
+render();
+
+}
+</script>
+</body>
+</html>

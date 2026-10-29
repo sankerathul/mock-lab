@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mock Lab · CCA-F practice tests</title>
+<meta name="description" content="Free practice tests for the Claude Certified Architect – Foundations exam.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --ink:#17212b; --muted:#56636f; --line:#d3dae1; --line-strong:#a9b4bf;
+  --accent:#1d5a8c; --accent-ink:#ffffff; --accent-soft:#dfeaf5; --accent-soft-ink:#164a74;
+  --flag:#a35f00; --flag-soft:#fbecd2; --flag-line:#e0a64b;
+  --ok:#1e7a4a; --ok-soft:#e1f2e8; --bad:#b3261e; --bad-soft:#f9e3e1;
+  --bar:#1b2733; --bar-ink:#eef2f6; --bar-muted:#a9b6c3;
+  --font-ui:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f151b; --panel:#17212b; --ink:#e4eaf0; --muted:#9aa7b4; --line:#2b3743; --line-strong:#4a5866;
+  --accent:#6aa6dc; --accent-ink:#0d1620; --accent-soft:#1b3349; --accent-soft-ink:#a9cdee;
+  --flag:#f0b252; --flag-soft:#3b2c12; --flag-line:#8a6424;
+  --ok:#62c48f; --ok-soft:#15301f; --bad:#f08a80; --bad-soft:#3a1b19;
+  --bar:#0a1016; --bar-ink:#e4eaf0; --bar-muted:#8d9aa7; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151b; --panel:#17212b; --ink:#e4eaf0; --muted:#9aa7b4; --line:#2b3743; --line-strong:#4a5866;
+  --accent:#6aa6dc; --accent-ink:#0d1620; --accent-soft:#1b3349; --accent-soft-ink:#a9cdee;
+  --flag:#f0b252; --flag-soft:#3b2c12; --flag-line:#8a6424;
+  --ok:#62c48f; --ok-soft:#15301f; --bad:#f08a80; --bad-soft:#3a1b19;
+  --bar:#0a1016; --bar-ink:#e4eaf0; --bar-muted:#8d9aa7; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.55}
+.wrap{max-width:960px;margin:0 auto;padding-left:16px;padding-right:16px}
+.bar{background:var(--bar);color:var(--bar-ink)}
+.bar .wrap{display:flex;align-items:center;min-height:52px;gap:1rem}
+.bar b{font-weight:600}
+.bar span{color:var(--bar-muted);font-size:.9rem}
+header.hero{padding:2.5rem 0 1.5rem}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:clamp(1.7rem,4.5vw,2.3rem);line-height:1.2;margin:.3rem 0 .6rem;font-weight:600;text-wrap:balance}
+.lead{color:var(--muted);max-width:64ch;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin-top:1.1rem;font-size:.9rem;color:var(--muted)}
+.facts b{font-family:var(--font-mono);font-weight:500;color:var(--ink)}
+section.cat{padding:1.25rem 0}
+.cathead{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--line);padding-bottom:.5rem;margin-bottom:1rem}
+.cathead h2{margin:0;font-size:1.15rem;font-weight:600}
+.cathead p{margin:0;font-size:.88rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,17rem),1fr));gap:.8rem}
+.test{display:grid;grid-template-rows:auto 1fr auto;gap:.6rem;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:1.1rem 1.1rem 1rem;color:inherit;text-decoration:none;transition:border-color .15s}
+.test:hover{border-color:var(--accent)}
+.test:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.test h3{margin:0;font-size:1.05rem;font-weight:600}
+.test p{margin:0;font-size:.9rem;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem;font-size:.78rem}
+.meta span{border:1px solid var(--line);border-radius:4px;padding:.05rem .45rem;font-family:var(--font-mono);color:var(--muted)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:.5rem;border-top:1px solid var(--line);padding-top:.6rem;font-size:.85rem}
+.go{color:var(--accent);font-weight:500}
+.st{color:var(--muted)}
+.st.pass{color:var(--ok)} .st.fail{color:var(--bad)} .st.prog{color:var(--flag)}
+.tips{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem;margin:1rem 0 0}
+.tips ul{margin:.4rem 0 0;padding-left:1.1rem;display:grid;gap:.25rem;font-size:.92rem}
+footer{padding:2rem 0 3rem;font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);margin-top:2rem}
+footer p{margin:.25rem 0;max-width:75ch}
+</style>
+</head>
+<body>
+<div class="bar"><div class="wrap"><b>Mock Lab</b><span>Free practice tests</span></div></div>
+<main class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Claude Certified Architect – Foundations</div>
+    <h1>Practice tests for the CCA-F exam</h1>
+    <p class="lead">Scenario-based questions in the format of the real exam. Take any test timed or in untimed practice mode. Each one ends with your score by domain and an explanation for every answer.</p>
+    <div class="facts" id="facts"></div>
+    <div class="tips">
+      <div class="eyebrow">Exam tips built in</div>
+      <ul>
+        <li><b>Strike out</b> answers you've ruled out: right-click an option (on a phone, tap the ✕ next to it).</li>
+        <li><b>Mark for review</b> to come back to a question before you submit.</li>
+        <li>Progress saves in your browser, so you can close the tab and resume later.</li>
+      </ul>
+    </div>
+  </header>
+  <div id="cats"></div>
+</main>
+<footer><div class="wrap">
+  <p>Unofficial practice material, not affiliated with or endorsed by Anthropic. Questions are original, written from the public exam guide, and are not real exam questions.</p>
+  <p>Your answers and results stay in your own browser. Nothing is collected.</p>
+</div></footer>
+<script src="exams/catalog.js"></script>
+<script>
+(function () {
+  var C = window.CATALOG || [];
+  var groups = [
+    ["full", "Full mock tests", "Full length, like the real exam: 60 questions in 2 hours."],
+    ["short", "Short practice tests", "Quicker sets for focused practice."]
+  ];
+  var total = C.reduce(function (a, c) { return a + c.count; }, 0);
+  document.getElementById("facts").innerHTML = "<span><b>" + C.length + "</b> tests</span><span><b>" + total + "</b> questions</span><span><b>72%</b> approx. pass mark</span>";
+  function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; }
+  function status(id) {
+    try {
+      var p = JSON.parse(localStorage.getItem("openexam-" + id + "-progress-v1") || "null");
+      if (!p) return null;
+      if (p.status === "submitted" && p.result) return { cls: p.result.passed ? "pass" : "fail", txt: "Last score " + p.result.score + "/" + p.result.total + " (" + Math.round(100 * p.result.score / p.result.total) + "%)" };
+      if (p.status === "in_progress") return { cls: "prog", txt: "In progress" };
+    } catch (e) {}
+    return null;
+  }
+  var host = document.getElementById("cats");
+  groups.forEach(function (g) {
+    var items = C.filter(function (c) { return c.category === g[0]; });
+    if (!items.length) return;
+    var s = el("section", "cat"); var h = el("div", "cathead");
+    h.append(el("h2", null, g[1]), el("p", null, g[2])); s.append(h);
+    var grid = el("div", "grid");
+    items.forEach(function (c) {
+      var a = el("a", "test"); a.href = "exam.html?id=" + encodeURIComponent(c.id);
+      var top = el("div"); top.style.display = "grid"; top.style.gap = ".45rem";
+      top.append(el("h3", null, c.title));
+      var meta = el("div", "meta");
+      [c.count + " questions", c.minutes + " min", c.scenarios + " scenarios"].forEach(function (t) { meta.append(el("span", null, t)); });
+      top.append(meta);
+      var st = status(c.id);
+      var foot = el("div", "foot");
+      foot.append(el("span", "st" + (st ? " " + st.cls : ""), st ? st.txt : "Not started"), el("span", "go", st && st.cls === "prog" ? "Resume →" : "Start →"));
+      a.append(top, el("p", null, c.intro), foot);
+      grid.append(a);
+    });
+    s.append(grid); host.append(s);
+  });
+})();
+</script>
+</body>
+</html>
